@@ -50,6 +50,18 @@ if not DEBUG:
     ALLOWED_HOSTS.append('.railway.app')
     ALLOWED_HOSTS.append('.up.railway.app')
 
+# CSRF trusted origins for Railway
+CSRF_TRUSTED_ORIGINS = []
+if RAILWAY_STATIC_URL:
+    CSRF_TRUSTED_ORIGINS.append(RAILWAY_STATIC_URL)
+if RAILWAY_PUBLIC_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RAILWAY_PUBLIC_DOMAIN}')
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS.extend([
+        'https://*.railway.app',
+        'https://*.up.railway.app'
+    ])
+
 
 # Application definition
 
