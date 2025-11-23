@@ -51,8 +51,18 @@ if not DEBUG:
     ALLOWED_HOSTS.append('.up.railway.app')
 
 # CSRF trusted origins for Railway
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if os.getenv('CSRF_TRUSTED_ORIGINS') else []
+CSRF_TRUSTED_ORIGINS = []
 
+# Parse CSRF_TRUSTED_ORIGINS from environment variable and ensure they have https://
+if os.getenv('CSRF_TRUSTED_ORIGINS'):
+    for origin in os.getenv('CSRF_TRUSTED_ORIGINS').split(','):
+        origin = origin.strip()
+        if origin and not origin.startswith('http'):
+            origin = f'https://{origin}'
+        if origin and origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(origin)
+
+# Add Railway environment variables
 if RAILWAY_STATIC_URL and RAILWAY_STATIC_URL not in CSRF_TRUSTED_ORIGINS:
     CSRF_TRUSTED_ORIGINS.append(RAILWAY_STATIC_URL)
 if RAILWAY_PUBLIC_DOMAIN:
