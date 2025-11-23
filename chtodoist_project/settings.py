@@ -50,35 +50,21 @@ if not DEBUG:
     ALLOWED_HOSTS.append('.railway.app')
     ALLOWED_HOSTS.append('.up.railway.app')
 
-# CSRF trusted origins for Railway
-CSRF_TRUSTED_ORIGINS = []
+# CSRF trusted origins for Railway - auto-configured
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+]
 
-# Parse CSRF_TRUSTED_ORIGINS from environment variable and ensure they have https://
-if os.getenv('CSRF_TRUSTED_ORIGINS'):
-    for origin in os.getenv('CSRF_TRUSTED_ORIGINS').split(','):
-        origin = origin.strip()
-        if origin and not origin.startswith('http'):
-            origin = f'https://{origin}'
-        if origin and origin not in CSRF_TRUSTED_ORIGINS:
-            CSRF_TRUSTED_ORIGINS.append(origin)
+# Add Railway environment variables if they exist
+if RAILWAY_STATIC_URL:
+    if RAILWAY_STATIC_URL not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(RAILWAY_STATIC_URL)
 
-# Add Railway environment variables
-if RAILWAY_STATIC_URL and RAILWAY_STATIC_URL not in CSRF_TRUSTED_ORIGINS:
-    CSRF_TRUSTED_ORIGINS.append(RAILWAY_STATIC_URL)
 if RAILWAY_PUBLIC_DOMAIN:
     domain_url = f'https://{RAILWAY_PUBLIC_DOMAIN}'
     if domain_url not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(domain_url)
-
-# Add common Railway patterns
-railway_patterns = [
-    'https://*.railway.app',
-    'https://*.up.railway.app',
-    'https://chtodoist-production.up.railway.app'
-]
-for pattern in railway_patterns:
-    if pattern not in CSRF_TRUSTED_ORIGINS:
-        CSRF_TRUSTED_ORIGINS.append(pattern)
 
 # Session and CSRF settings for production
 if not DEBUG:
