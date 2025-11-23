@@ -29,7 +29,26 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-y&z%8ff6$y$i5r-i_oc8wo56&s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
+# ALLOWED_HOSTS configuration
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+# Auto-detect Railway deployment
+RAILWAY_STATIC_URL = os.getenv('RAILWAY_STATIC_URL')
+RAILWAY_PUBLIC_DOMAIN = os.getenv('RAILWAY_PUBLIC_DOMAIN')
+
+if RAILWAY_STATIC_URL:
+    # Extract domain from Railway static URL
+    railway_domain = RAILWAY_STATIC_URL.replace('https://', '').replace('http://', '')
+    if railway_domain not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(railway_domain)
+
+if RAILWAY_PUBLIC_DOMAIN and RAILWAY_PUBLIC_DOMAIN not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
+
+# Allow all Railway.app domains in production
+if not DEBUG:
+    ALLOWED_HOSTS.append('.railway.app')
+    ALLOWED_HOSTS.append('.up.railway.app')
 
 
 # Application definition
