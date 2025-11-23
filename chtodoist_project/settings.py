@@ -51,16 +51,33 @@ if not DEBUG:
     ALLOWED_HOSTS.append('.up.railway.app')
 
 # CSRF trusted origins for Railway
-CSRF_TRUSTED_ORIGINS = []
-if RAILWAY_STATIC_URL:
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if os.getenv('CSRF_TRUSTED_ORIGINS') else []
+
+if RAILWAY_STATIC_URL and RAILWAY_STATIC_URL not in CSRF_TRUSTED_ORIGINS:
     CSRF_TRUSTED_ORIGINS.append(RAILWAY_STATIC_URL)
 if RAILWAY_PUBLIC_DOMAIN:
-    CSRF_TRUSTED_ORIGINS.append(f'https://{RAILWAY_PUBLIC_DOMAIN}')
+    domain_url = f'https://{RAILWAY_PUBLIC_DOMAIN}'
+    if domain_url not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(domain_url)
+
+# Add common Railway patterns
+railway_patterns = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+    'https://chtodoist-production.up.railway.app'
+]
+for pattern in railway_patterns:
+    if pattern not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(pattern)
+
+# Session and CSRF settings for production
 if not DEBUG:
-    CSRF_TRUSTED_ORIGINS.extend([
-        'https://*.railway.app',
-        'https://*.up.railway.app'
-    ])
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = False  # Railway handles SSL
+else:
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
 
 
 # Application definition
