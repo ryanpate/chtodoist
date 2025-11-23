@@ -1,0 +1,66 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}Auto-Complete Rules - chtodoist{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Auto-Complete Rules</h1>
+
+<div class="card">
+    <p style="margin-bottom: 1.5rem; color: #666;">
+        Tasks with auto-complete rules will be automatically completed after their due date.
+    </p>
+
+    {% if rules %}
+    <table>
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Todoist Task ID</th>
+                <th>Hours After Due Date</th>
+                <th>Status</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rule in rules %}
+            <tr>
+                <td><strong>{{ rule.task_content }}</strong></td>
+                <td><code style="font-size: 0.875rem; color: #666;">{{ rule.todoist_task_id }}</code></td>
+                <td>{{ rule.complete_after_hours }} hours</td>
+                <td>
+                    {% if rule.is_active %}
+                    <span class="badge badge-success">Active</span>
+                    {% else %}
+                    <span class="badge" style="background: #95a5a6; color: white;">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>{{ rule.created_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #666; padding: 2rem; text-align: center;">
+        No auto-complete rules configured. Add them from the dashboard.
+    </p>
+    {% endif %}
+</div>
+
+<div class="card" style="margin-top: 2rem; background: #f8f9fa;">
+    <h3>How Auto-Complete Works</h3>
+    <ul style="margin-top: 1rem; padding-left: 1.5rem;">
+        <li style="margin-bottom: 0.5rem;">
+            A background job runs periodically to check for overdue tasks with auto-complete rules
+        </li>
+        <li style="margin-bottom: 0.5rem;">
+            When a task passes its due date + configured hours, it will be automatically completed in Todoist
+        </li>
+        <li style="margin-bottom: 0.5rem;">
+            This is especially useful for recurring tasks that shouldn't pile up
+        </li>
+        <li style="margin-bottom: 0.5rem;">
+            Set hours to 0 to auto-complete immediately when overdue
+        </li>
+    </ul>
+</div>
+{% endblock %}
