@@ -1,0 +1,80 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}Task Templates - chtodoist{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Task Templates</h1>
+    <a href="{% url 'template_create' %}" class="btn btn-success">Create New Template</a>
+</div>
+
+<div class="card">
+    {% if templates %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Template</th>
+                <th>Frequency</th>
+                <th>Priority</th>
+                <th>Auto-Complete</th>
+                <th>Status</th>
+                <th>Last Generated</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for template in templates %}
+            <tr>
+                <td><strong>{{ template.name }}</strong></td>
+                <td>{{ template.content_template }}</td>
+                <td><span class="badge badge-primary">{{ template.get_frequency_display }}</span></td>
+                <td>
+                    {% if template.priority == 4 %}
+                    <span class="badge badge-danger">Urgent</span>
+                    {% elif template.priority == 3 %}
+                    <span class="badge badge-warning">High</span>
+                    {% elif template.priority == 2 %}
+                    <span class="badge badge-primary">Medium</span>
+                    {% else %}
+                    <span class="badge" style="background: #95a5a6; color: white;">Low</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if template.auto_complete %}
+                    <span class="badge badge-success">Yes</span>
+                    {% else %}
+                    <span style="color: #999;">No</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if template.is_active %}
+                    <span class="badge badge-success">Active</span>
+                    {% else %}
+                    <span class="badge" style="background: #95a5a6; color: white;">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if template.last_generated %}
+                    {{ template.last_generated|date:"Y-m-d H:i" }}
+                    {% else %}
+                    <span style="color: #999;">Never</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="post" action="{% url 'template_generate' template.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Generate</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #666; padding: 2rem; text-align: center;">
+        No templates yet. <a href="{% url 'template_create' %}">Create your first template</a>
+    </p>
+    {% endif %}
+</div>
+{% endblock %}

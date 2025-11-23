@@ -1,0 +1,88 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}Create Template - chtodoist{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Create Task Template</h1>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="name">Template Name:</label>
+        <input type="text" name="name" id="name" required placeholder="e.g., Weekly Report">
+
+        <label for="content_template">Task Content Template:</label>
+        <input type="text" name="content_template" id="content_template" required
+               placeholder="e.g., Weekly Report - {date}">
+        <p style="font-size: 0.875rem; color: #666; margin-top: -0.5rem; margin-bottom: 1rem;">
+            Available variables: {date}, {month}, {day}, {year}
+        </p>
+
+        <label for="description_template">Description Template (optional):</label>
+        <textarea name="description_template" id="description_template" rows="3"
+                  placeholder="Optional description with same variables"></textarea>
+
+        <label for="project_id">Project:</label>
+        <select name="project_id" id="project_id">
+            <option value="">Inbox</option>
+            {% for project in projects %}
+            <option value="{{ project.id }}">{{ project.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="frequency">Frequency:</label>
+        <select name="frequency" id="frequency" required>
+            {% for value, label in frequencies %}
+            <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="priority">Priority:</label>
+        <select name="priority" id="priority">
+            <option value="1">Low</option>
+            <option value="2" selected>Medium</option>
+            <option value="3">High</option>
+            <option value="4">Urgent</option>
+        </select>
+
+        <label for="labels">Labels (comma-separated):</label>
+        <input type="text" name="labels" id="labels" placeholder="e.g., worship, weekly, report">
+
+        <div style="margin-bottom: 1rem;">
+            <label>
+                <input type="checkbox" name="auto_complete" checked>
+                Auto-complete tasks after due date
+            </label>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+            <label>
+                <input type="checkbox" name="is_active" checked>
+                Template is active
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-success">Create Template</button>
+        <a href="{% url 'template_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<div class="card" style="margin-top: 2rem; background: #f8f9fa;">
+    <h3>Template Examples</h3>
+    <ul style="margin-top: 1rem; padding-left: 1.5rem;">
+        <li style="margin-bottom: 0.5rem;">
+            <strong>Weekly Report - {date}</strong><br>
+            <span style="font-size: 0.875rem; color: #666;">Creates tasks like "Weekly Report - 2025-11-30"</span>
+        </li>
+        <li style="margin-bottom: 0.5rem;">
+            <strong>Sunday Service Prep - {month} {day}</strong><br>
+            <span style="font-size: 0.875rem; color: #666;">Creates tasks like "Sunday Service Prep - November 30"</span>
+        </li>
+        <li style="margin-bottom: 0.5rem;">
+            <strong>Monthly Team Meeting - {month} {year}</strong><br>
+            <span style="font-size: 0.875rem; color: #666;">Creates tasks like "Monthly Team Meeting - November 2025"</span>
+        </li>
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}Notifications - chtodoist{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Notifications</h1>
+    {% if notifications %}
+    <form method="post" action="{% url 'notification_mark_all_read' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary">Mark All as Read</button>
+    </form>
+    {% endif %}
+</div>
+
+<div class="card">
+    {% if notifications %}
+    {% for notification in notifications %}
+    <div style="padding: 1rem; border-bottom: 1px solid #ddd; {% if not notification.is_read %}background: #f0f8ff;{% endif %}">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div style="flex: 1;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.25rem;">
+                    {{ notification.title }}
+                    {% if not notification.is_read %}
+                    <span class="badge badge-primary" style="font-size: 0.75rem;">New</span>
+                    {% endif %}
+                </h3>
+                <p style="color: #666; margin-bottom: 0.5rem;">{{ notification.message }}</p>
+                <p style="font-size: 0.875rem; color: #999;">
+                    <span class="badge" style="background: #95a5a6; color: white; font-size: 0.75rem;">{{ notification.get_notification_type_display }}</span>
+                    {{ notification.created_at|date:"Y-m-d H:i" }}
+                </p>
+            </div>
+            {% if not notification.is_read %}
+            <form method="post" action="{% url 'notification_mark_read' notification.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Mark Read</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p style="color: #666; padding: 2rem; text-align: center;">
+        No notifications yet.
+    </p>
+    {% endif %}
+</div>
+{% endblock %}

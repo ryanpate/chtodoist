@@ -1,0 +1,27 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}Login - chtodoist{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 100px auto;">
+    <div class="card">
+        <h2>Login to chtodoist</h2>
+        <p style="margin-bottom: 1.5rem; color: #666;">Worship Arts Task Management</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_username">Username:</label>
+            {{ form.username }}
+
+            <label for="id_password">Password:</label>
+            {{ form.password }}
+
+            <button type="submit" class="btn" style="width: 100%;">Login</button>
+        </form>
+
+        <p style="margin-top: 1rem; text-align: center; color: #666; font-size: 0.875rem;">
+            Contact your administrator for login credentials
+        </p>
+    </div>
+</div>
+{% endblock %}
